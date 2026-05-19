@@ -2,10 +2,12 @@ from tinyc_token import *
 import os
 
 class Lexer(object):
-    pos = 0
-    text = ""
-    fd = -1
-    curchar = None
+
+    def __init__(self):
+        self.pos = 0
+        self.fd = -1
+        self.curchar = None
+        self.outlook = []
 
     def open_file(self, path):
         # should the lexer take care of opening a file???
@@ -18,14 +20,20 @@ class Lexer(object):
         self.pos += 1
         return str(os.read(self.fd, 1))
     
+    def peek(self):
+        if len(self.outlook) != 0: return self.outlook[-1]
+        tok = self.next_token()
+        self.outlook.append(tok)
+        return tok
+    
     def next_token(self):
-        if not self.curchar == " " and not self.curchar == ";": # hacky: without lookahead I must consume the character that previously ended the loop reading lower down
+        if len(self.outlook) != 0: return self.outlook.pop()
+
+        if not self.curchar == ";": # hacky: without lookahead I must consume the character that previously ended the loop reading lower down
             self.curchar = self._read_next_char()
 
-        # characters leftover from prev. incovation can only be a semicol or a whitespace
-        if self.curchar == " ":    self.curchar = ""; return Token(TOKEN_WHITESPACE, None, self.pos)
-        elif self.curchar == ";":  self.curchar = ""; return Token(TOKEN_SEMICOL, None, self.pos)   
-        
+        # character leftover from prev. incovation can only be a semicolon
+        if self.curchar == ";":  self.curchar = ""; return Token(TOKEN_SEMICOL, None, self.pos)   
         # normally check for characters here
         elif self.curchar == "":   return Token(TOKEN_EOF, None, self.pos)
         elif self.curchar == "(":  return Token(TOKEN_PARAOPEN, None, self.pos)
@@ -34,15 +42,15 @@ class Lexer(object):
         elif self.curchar == "}":  return Token(TOKEN_BRACLOSE, None, self.pos)
         elif self.curchar == ";":  return Token(TOKEN_SEMICOL, None, self.pos)
         elif self.curchar == "=":  return Token(TOKEN_EQUAL, None, self.pos)
-        elif self.curchar == "<":  return Token(TOKEN_SMALLER, None, self.pos)        
-        elif self.curchar == ">":  return Token(TOKEN_GREATER, None, self.pos)
-        elif self.curchar == "+":  return Token(TOKEN_PLUS, None, self.pos)        
-        elif self.curchar == "-":  return Token(TOKEN_MINUS, None, self.pos)
+        elif self.curchar == "<":  return Token(TOKEN_SMALLER, "<", self.pos)        
+        elif self.curchar == ">":  return Token(TOKEN_GREATER, ">", self.pos)
+        elif self.curchar == "+":  return Token(TOKEN_PLUS, "+", self.pos)        
+        elif self.curchar == "-":  return Token(TOKEN_MINUS, "-", self.pos)
         else:
             start_pos = self.pos # save 'real' start pos
             wrd = self.curchar
 
-            # read all consecutive chars until whitespace,eof or semicolon
+            # read all consecutive chars until whitespace, eof or semicolon
             # problem the 'stopping' character must still be consumed normally in the next invocation of next_token()
             while True:
                 nxt = self._read_next_char()
@@ -61,7 +69,7 @@ class Lexer(object):
             # check if wrd is an int
             try:
                 intval = int(wrd)
-                return Token(TOKEN_NUMBER, str(intval), start_pos)
+                return Token(TOKEN_INT, str(intval), start_pos)
             except Exception as e:
                 pass     
 

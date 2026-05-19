@@ -17,12 +17,11 @@ TOKEN_IF = 14
 TOKEN_ELSE = 15
 TOKEN_WHILE = 16
 TOKEN_DO = 17
-TOKEN_NUMBER = 18
-TOKEN_EOF = 19
+TOKEN_EOF = 18
 
 TOKEN_NAMES = ["ERROR", "WHITESPACE", "PARAOPEN", "PARACLOSE", "BRAOPEN",
                "BRACLOSE", "SEMICOL", "EQUAL", "SMALLER", "GREATER", "PLUS",
-               "MINUS", "INT", "IDENT", "IF", "ELSE", "WHILE", "DO", "NUMBER", "EOF"]
+               "MINUS", "INT", "IDENT", "IF", "ELSE", "WHILE", "DO", "EOF"]
 
 class Token(object):
     ttype = TOKEN_ERROR
@@ -40,10 +39,10 @@ class Token(object):
         return TOKEN_NAMES[id]
     
     def get_str(self):
-        return "TOKEN_%s_VALUE_[%s]_POS_[%d]" % (Token._id_to_name(self.ttype), self.tvalue, self.tpos)
+        return "TOKEN_[%s]_VALUE_[%s]_POS_[%d]" % (Token._id_to_name(self.ttype), self.tvalue, self.tpos)
 
     def __str__(self):
-        return "TOKEN_%s_VALUE_[%s]_POS_[%d]" % (Token._id_to_name(self.ttype), self.tvalue, self.tpos)
+        return "TOKEN_[%s]_VALUE_[%s]_POS_[%d]" % (Token._id_to_name(self.ttype), self.tvalue, self.tpos)
     
     def __repr__(self):
         return str(self)
