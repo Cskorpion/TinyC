@@ -1,0 +1,1 @@
+pypy/pypy-c pypy/rpython/bin/rpython --opt=3 --cc=gcc --gc=incminimark rpy_tinyc_compiler.py

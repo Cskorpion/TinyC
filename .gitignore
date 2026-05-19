@@ -53,3 +53,12 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# pypy
+pypy/
+
+# python
+*.pyc
+
+# vscode
+/.vscode
